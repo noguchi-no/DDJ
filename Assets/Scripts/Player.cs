@@ -22,6 +22,11 @@ public class Player : MonoBehaviour
     public Vector2 airGravity = new Vector2();
     public float jumpPowerY;
 
+    //Effect用の変数
+    public ParticleSystem J1ps;
+    public ParticleSystem J2ps;
+    public ParticleSystem cps;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -70,6 +75,14 @@ public class Player : MonoBehaviour
                 Debug.Log(rb.velocity.y);
 
                 if(jumpCount < maxJumpCount){
+
+                    //エフェクト発生
+                    if(jumpCount == 0) {
+                        J1ps.Play();
+                    } else if(jumpCount == 1) {
+                        J2ps.Play();
+                    }
+
                     Debug.Log("jump");
                     //isGame = false;
                     //rb.velocity = jumpPower;
@@ -104,7 +117,7 @@ public class Player : MonoBehaviour
             Debug.Log(rb.velocity.y);
             //x = rb.velocity.y;
             //Debug.Log(x);
-            rb.velocity = new Vector2(playerSpeed, 0f);
+            //rb.velocity = new Vector2(playerSpeed, 0f);
             //rb.AddForce(airGravity);
 
         }else{
@@ -117,6 +130,9 @@ public class Player : MonoBehaviour
     {
         if(other.gameObject.CompareTag("Floor"))
         {
+
+            if(isJumping) cps.Play();
+
             isHoldJump = false;
             timeForHoldJump = 0;
             isJumping = false;
@@ -125,7 +141,12 @@ public class Player : MonoBehaviour
             
         }else{
             Debug.Log("GameOver");
-            SceneManager.LoadScene("Game");
+
+            GetComponent<SpriteRenderer>().enabled = false;
+            GetComponent<TrailRenderer>().enabled = false;
+            CameraController.Shake(this, 0.5f, 0.1f);
+            //Destroy(this.gameObject);
+            //SceneManager.LoadScene("Game");
         }
     }
 
